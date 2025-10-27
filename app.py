@@ -1,15 +1,12 @@
 from flask import Flask, request, jsonify
 from db_mysql import get_conn
 
-# 1️⃣ Create Flask app
 app = Flask(__name__)
 
-# 2️⃣ Home route (optional)
 @app.route("/")
 def home():
     return "API is working!"
 
-# 3️⃣ Pagination endpoint
 @app.route("/people", methods=["GET"])
 def get_people():
     page = int(request.args.get("page", 1))
@@ -24,7 +21,6 @@ def get_people():
     conn.close()
     return jsonify(rows)
 
-# 4️⃣ Search endpoint
 @app.route("/people/search", methods=["GET"])
 def search_people():
     name = request.args.get("name")
@@ -52,6 +48,5 @@ def search_people():
     conn.close()
     return jsonify(rows)
 
-# 5️⃣ Run app
 if __name__ == "__main__":
     app.run(debug=True)

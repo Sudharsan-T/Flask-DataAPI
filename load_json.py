@@ -1,29 +1,52 @@
+import mysql.connector
 import json
-from db_mysql import init_db, get_conn
-def load_json_to_db(json_path="data.json"):
-    init_db()
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
-    with open(json_path, "r", encoding="utf-8") as f:
+def load_json_to_db():
+    conn = mysql.connector.connect(
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASS"),
+        database=os.getenv("DB_NAME")
+    )
+    cur = conn.cursor()
+
+    # Create table if not exists
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS people (
+            id INT PRIMARY KEY,
+            name VARCHAR(255),
+            age INT,
+            role VARCHAR(255),
+            city VARCHAR(255)
+        )
+    """)
+
+    # Load JSON file
+    with open("data.json", "r") as f:
         data = json.load(f)
 
-    selected = ["id","name","age","role","city"]
-    rows = []
-    for item in data:
-        row = (
-            int(item.get("id")),
-            item.get("name"),
-            int(item.get("age")) if item.get("age") is not None else None,
-            item.get("role"),
-            item.get("city")
-        )
-        rows.append(row)
+    # Prepare rows
+    rows = [(p["id"], p["name"], p["age"], p["role"], p["city"]) for p in data]
 
-    conn = get_conn()
-    cur = conn.cursor()
-    sql = "INSERT INTO people (id, name, age, role, city) VALUES (%s, %s, %s, %s, %s)"
+    # Insert or update
+    sql = """
+    INSERT INTO people (id, name, age, role, city)
+    VALUES (%s, %s, %s, %s, %s)
+    ON DUPLICATE KEY UPDATE
+    name = VALUES(name),
+    age = VALUES(age),
+    role = VALUES(role),
+    city = VALUES(city)
+    """
+
     cur.executemany(sql, rows)
     conn.commit()
-    print(f"Inserted/Updated {cur.rowcount} rows.")
+
+    print(f"✅ {cur.rowcount} rows inserted or updated successfully!")
+
     cur.close()
     conn.close()
 

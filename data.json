@@ -4,5 +4,6 @@
   {"id": 3, "name": "Charlie", "age": 24, "role": "intern", "city": "Mumbai"},
   {"id": 4, "name": "David", "age": 30, "role": "engineer", "city": "Pune"},
   {"id": 5, "name": "Eve", "age": 29, "role": "product", "city": "Chennai"},
-  {"id": 6, "name": "Frank", "age": 35, "role": "manager", "city": "Hyderabad"}
+  {"id": 6, "name": "Frank", "age": 35, "role": "manager", "city": "Hyderabad"},
+  {"id": 7, "name": "Nigga", "age": 27, "role": "data engineer", "city": "Coimbatore"}
 ]
